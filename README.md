@@ -6,7 +6,6 @@ Contact:
 -----------
 Daniel Wieferich: dwieferich@usgs.gov
 
-
 -----------
 Collaborators:
 -----------
@@ -14,9 +13,6 @@ Gretchen Stokes: gstokes@usgs.gov
 Abby Lynch: ajlynch@usgs.gov 	
 Simon Funge-Smith: Simon.FungeSmith@fao.org
 Food and Agriculture Organization of the United Nations		  
-	
-
-
 
 -----------
 Purpose:
@@ -34,7 +30,10 @@ Development Status:
 -------------------
 Software documented in this repository are unpublished and will be under continual development.  Collaborative efforts to help improve code and analyses are welcomed.
 
-
+-----------
+Acknowledgements:
+-----------
+Rick Debbout, Marc Weber, Ryan Hill for sharing past efforts, methods, and lessons learned.
 
 
 
