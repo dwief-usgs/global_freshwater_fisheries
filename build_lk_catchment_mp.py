@@ -47,7 +47,7 @@ if __name__ == '__main__':
             build_lk.watershed(flow_dir_file,lake,55)
 
     p = Pool(6)
-    list_of_results = pool.map(run_lake, ((lake for lake in lakes_info)))
+    list_of_results = p.map(run_lake, ((lake for lake in lakes_info)))
     p.close()
     p.join()
 
