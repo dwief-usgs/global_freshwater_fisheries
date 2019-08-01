@@ -38,18 +38,18 @@ def run_the_stats(gdf_w_bbox, json_file_info, basin_id):
 
 if __name__ == '__main__':
 
-    
+    which_region = 'as'
+    basin_file = f'data/HydroSHEDS/HydroBASINS/basins/hybas_{which_region}_lev12_v1c/hybas_{which_region}_lev12_v1c.shp'
 
     with open("data/var/files_info.json", "r") as all_file_info:
         json_file_info = json.load(all_file_info)
 
-    gdf = gpd.read_file('data/HydroSHEDS/HydroBASINS/basins/hybas_as_lev12_v1c/hybas_as_lev12_v1c.shp') 
+    gdf = gpd.read_file(basin_file) 
 
     start= timer()
 
     #create list of basin ids that need processing
     basin_list = gdf['HYBAS_ID'].tolist()
-    basin_list = basin_list[0:3000]
 
     #create bounding box dataframe and join back to gdf using index
     bbox= gdf.bounds
@@ -63,6 +63,8 @@ if __name__ == '__main__':
     p.close()
     p.join()
     
+
+    outfile_name = f'{which_region}_stats.json'
     #final_list = [item for sublist in result for item in sublist] 
     with open('test_stats.json', 'w') as outfile:
         json.dump(result, outfile)
