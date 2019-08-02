@@ -50,6 +50,8 @@ if __name__ == '__main__':
 
     #create list of basin ids that need processing
     basin_list = gdf['HYBAS_ID'].tolist()
+    #If you want to run a small subset
+    basin_list = basin_list[0:100]
 
     #create bounding box dataframe and join back to gdf using index
     bbox= gdf.bounds
@@ -64,9 +66,9 @@ if __name__ == '__main__':
     p.join()
     
 
-    outfile_name = f'{which_region}_stats.json'
+    outfile_name = f't{which_region}_stats.json'
     #final_list = [item for sublist in result for item in sublist] 
-    with open('test_stats.json', 'w') as outfile:
+    with open(outfile_name, 'w') as outfile:
         json.dump(result, outfile)
 
     end = timer() 
