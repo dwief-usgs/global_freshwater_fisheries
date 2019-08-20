@@ -57,6 +57,15 @@ class FileInfo:
                 pass
 
     def user_supplied_info(self, csv_file='data/var/file_processing_info.csv'):
+        '''
+        Description
+        ---------
+        adds user supplied information to FileInfo objects
+
+        Parameters
+        ---------
+        missing_info: list of arrays documenting which files are available but have missing information 
+        '''
         missing_info = {}
         try:
             df = pd.read_csv(csv_file)
@@ -66,7 +75,7 @@ class FileInfo:
                 print (f'{self.file_name} is duplicated in data/var/src_processing_info.csv')
             elif rows < 1:
                 missing_info['file_name']=self.file_name
-                missing_info['missing_fields']=['field_name','variable', 'src_short','summary_type','label']
+                missing_info['missing_fields']=['field_name','variable', 'src_short','summary_type','label','all_touched','conditional']
                 return missing_info
             else:
                 #if any nan in df
@@ -81,7 +90,8 @@ class FileInfo:
                     self.src_short = df_row.iloc[0]['src_short']
                     self.summary_type = df_row.iloc[0]['summary_type']
                     self.label = df_row.iloc[0]['label']
-                    return missing_info
+                    self.categorical = df_row.iloc[0]['categorical']
+                    self.pixel_inclusion = df_row.iloc[0]['pixel_inclusion']
             
         except:
             missing_info['file_name']=self.file_name
