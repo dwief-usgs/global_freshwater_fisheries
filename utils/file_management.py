@@ -52,7 +52,7 @@ class FileInfo:
                 #rasterio geotransform, produces values ()
                 gt = file_data.transform
                 self.pixel_size = gt[0]
-                self.crs = file_data.crs
+                self.crs = str(file_data.crs)
             except:
                 pass
 
@@ -105,6 +105,7 @@ def store_file_info(file_list, directory, short_name):
         file_name = file['file_name']
         file_path = file['file_path']
         file_info = FileInfo(file_name, file_path)
+        file_info.tif_info()
         missing_data = file_info.user_supplied_info()
         if missing_data:
             missing_info.append(missing_data) 

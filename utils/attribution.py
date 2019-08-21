@@ -18,7 +18,7 @@ import json
     module that builds objects for attributing information from landscape variables to spatial units such as watersheds
 '''
 class Stats:
-    def __init__(self, spatial_unit_id):
+    def __init__(self, spatial_unit_id, pfaf_12, sub_area):
         '''
         Description
         ---------
@@ -30,6 +30,8 @@ class Stats:
         '''
         self.id = spatial_unit_id
         self.basin_stats = {}
+        self.pfaf_12 = pfaf_12
+        self.sub_area = sub_area
     
     def bounds(self, xmin, xmax, ymin, ymax):
         '''
@@ -101,17 +103,26 @@ class Stats:
         ---------
         self.basin_stats : dictionary of zonal statistics
         '''
-
+        #This function should be broke into a few functions
         if self.bounds_eval >0:
             label = file['label']
-            nodata_val = file["no_data_val"]
-            var_file_path = file["file_path"]
-            stats = "nodata count mean"
-            file_name = file["file_name"]
+            nodata_val = file['no_data_val']
+            var_file_path = file['file_path']
+            #stats = "nodata count mean"
+            stats = file['summary_type']
+            file_name = file['file_name']
+            cat = False
+            if "categorical" in file and file['categorical'] == 'yes':
+                cat = True
+            all_touching = False
+            if "pixel_inclusion" in file and file['pixel_inclusion'] == 'all_touching':
+                all_touching = True
             prefix = f'{label}_'
 
             src_info = {'file_name': file_name, 'bounds_eval': self.bounds_eval}
-            result = zonal_stats(object_gdf, var_file_path, stats=stats, nodata=nodata_val, geojson_out=False, prefix=prefix, band=1)
+            result = zonal_stats(object_gdf, var_file_path, stats=stats, nodata=nodata_val, geojson_out=False, prefix=prefix, band=1, categorical=cat, all_touching=all_touching)
+            if len(result)>1:
+                print (f'HydroID {self.id} has {len(result)} results from zonal stats.. better check that!')
             result[0]['src_file']= [src_info]
             file_stats = {}
             file_stats[label]= result[0]
@@ -163,6 +174,11 @@ class Stats:
     def add_to_all_stats(self, collection):
             final_basin_stats = self.basin_stats
             final_basin_stats['id'] = self.id
+            if len(str(self.pfaf_12)) == 12:
+                final_basin_stats['pfaf_12'] = int(self.pfaf_12)
+            if self.sub_area > 0:
+                final_basin_stats['sub_area'] = float(self.sub_area)
+            
             collection.append(final_basin_stats)
             return collection
 
