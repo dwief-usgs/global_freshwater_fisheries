@@ -120,7 +120,7 @@ class Stats:
             prefix = f'{label}_'
 
             src_info = {'file_name': file_name, 'bounds_eval': self.bounds_eval}
-            result = zonal_stats(object_gdf, var_file_path, stats=stats, nodata=nodata_val, geojson_out=False, prefix=prefix, band=1, categorical=cat, all_touching=all_touching)
+            result = zonal_stats(object_gdf, var_file_path, stats=stats, nodata=nodata_val, geojson_out=False, prefix=prefix, band=1, categorical=cat, all_touched=all_touching)
             if len(result)>1:
                 print (f'HydroID {self.id} has {len(result)} results from zonal stats.. better check that!')
             result[0]['src_file']= [src_info]
