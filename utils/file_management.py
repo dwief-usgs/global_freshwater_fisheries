@@ -247,6 +247,16 @@ def read_pkl_df(file_path='data/basins_lvl12_df.pkl'):
     df = pd.read_pickle(file_path)
     return df
 
+def basin_list_by_pfaf_lvl(level=12, df = read_pkl_df()):
+    '''
+    pass desired basin level to get unique list of pfaf ids at that level
+    '''
+    level = int(level)
+    pfaf_lvl12_ids = df['PFAF_ID'].tolist()
+    pfaf_lvlx_ids = list(set([str(x)[:level] for x in pfaf_lvl12_ids]))
+    return pfaf_lvlx_ids
+
+
 
 
 ############################################################################################
