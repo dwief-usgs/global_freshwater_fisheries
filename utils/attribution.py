@@ -16,6 +16,8 @@ import json
     Description
     ---------
     module that builds objects for attributing information from landscape variables to spatial units such as watersheds
+
+    Note: need to unravel so it isn't as specific to pfaf_12
 '''
 class Stats:
     def __init__(self, spatial_unit_id, pfaf_12, sub_area):
@@ -31,7 +33,7 @@ class Stats:
         self.id = spatial_unit_id
         self.basin_stats = {}
         self.pfaf_12 = pfaf_12
-        self.sub_area = sub_area
+        self.sub_area = float(sub_area)
     
     def bounds(self, xmin, xmax, ymin, ymax):
         '''
@@ -182,6 +184,27 @@ class Stats:
             collection.append(final_basin_stats)
             return collection
 
+def json_stats_to_csv(json_data, outfile_name, pfaf_field_nm = 'pfaf_12'):
+    list_info = []
+    for record in json_data:
+        info = {}
+        info['hybas_id'] = record['id']
+        #record pfaf identifier
+        info[pfaf_field_nm] = record[pfaf_field_nm]
+        #record area of hydrobasin level x
+        info['sub_area'] = record['sub_area']
+        for stat in record:
+            #grab all stats, avoiding identifiers and area fields
+            #Note may want to change json structure to make these types of queries more intuitive?
+            if stat != 'id' and stat != pfaf_field_nm and stat != 'sub_area':
+                # for each stat grab column name = key and value = value
+                for key, value in record[stat].items():
+                    if stat in key.lower() and value is not None:
+                        info[key] = value
+        list_info.append(info) 
+    df = pd.DataFrame(list_info)
+    df.to_csv(outfile_name, sep=',')
+    
 
 
 
