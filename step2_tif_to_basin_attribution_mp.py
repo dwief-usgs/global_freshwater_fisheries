@@ -8,7 +8,7 @@ from multiprocessing import Pool
 import json
 
 import warnings
-warnings.filterwarnings(action='once')
+warnings.filterwarnings("ignore")
 
 
 
@@ -44,39 +44,55 @@ def run_the_stats(gdf, json_file_info, basin_id):
 
 if __name__ == '__main__':
 
-    start= timer()
+    start_all= timer()
 
-    #Import file processing information
-    with open("data/var/tif_vars_file_info.json", "r") as all_file_info:
-        json_file_info = json.load(all_file_info)
+    all_results = []
+    regions = ['af','ar','as','au','eu','gr','na','sa','si']
+    for region in regions:
+        start_load= timer()
 
-    #Read in pickled level 12 HydroBASINS (see step1_data_management.ipynb)
-    #gdf = f_mng.read_pkl_gdf()
-    gdf = f_mng.read_pkl_gdf('data/basins_af_lvl12_gdf.pkl')
+        #Import file processing information
+        with open("data/var/tif_vars_file_info.json", "r") as all_file_info:
+            json_file_info = json.load(all_file_info)
 
-    #Read in list of HYBAS_IDs (see step1_data_management.ipynb).  Provides list of IDs to process.
-    #basin_list=f_mng.read_pkl_df('data/basins_lvl12.txt')
-    #basin_list=[1120000010, 1120000020, 1121694330, 1121693980, 1120000030,1120000040,1120000050,1120000060,1121696210,1120000070]
-    basin_list = gdf['HYBAS_ID'].tolist()
+        #Read in pickled level 12 HydroBASINS (see step1_data_management.ipynb)
+        gdf = f_mng.read_pkl_gdf(f'data/basins_{region}_lvl12_gdf.pkl')
 
-    #If you want to run a small subset
-    basin_list = basin_list[0:10000]
+        #Read in list of HYBAS_IDs (see step1_data_management.ipynb).  Provides list of IDs to process.
+        basin_list = gdf['HYBAS_ID'].tolist()
+
+        #If you want to run a small subset
+        #basin_list = basin_list[0:450]
+
+        end_load = timer() 
+        print(f'Seconds taken to load data for region {region}: {end_load-start_load}') 
+
+
+        start_proc= timer()
+        
+        # use 7 processers, leave () empty to use all available, noticed that sometimes causes issues on local machine
+        p = Pool(7)
+        values = partial(run_the_stats, gdf, json_file_info)
+        result = p.map(values, basin_list)
+        p.close()
+        p.join()
+
+        all_results += result
+
+        end_proc = timer() 
+        print(f'Seconds taken to process region {region}: {end_proc-start_proc}') 
     
-    # use 7 processers, leave () empty to use all available, noticed that sometimes causes issues on local machine
-    p = Pool(6)
-    values = partial(run_the_stats, gdf, json_file_info)
-    result = p.map(values, basin_list)
-    p.close()
-    p.join()
-    
 
+    all_results_clean = [x for x in all_results if x]
     outfile_name = f'output/tif_hb12_att.json'
-    #final_list = [item for sublist in result for item in sublist] 
+   
     with open(outfile_name, 'w') as outfile:
-        json.dump(result, outfile)
+        json.dump(all_results_clean, outfile)
 
-    end = timer() 
-    print("Time taken:", end-start) 
+    end_all = timer() 
+    print(f'Seconds taken to process all: {end_all-start_all}') 
+
+    
 
 
         
