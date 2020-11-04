@@ -3,10 +3,10 @@
 #import pkg_resources  # part of setuptools
 
 
-# Import 
-from . import build_lk_catchment
-from . import file_management
-from . import attribution
+# Import
+# from . import build_lk_catchment
+# from . import file_management
+# from . import attribution
 
 # provide version, PEP - three components ("major.minor.micro")
 #__version__ = pkg_resources.require("package_nm")[0].version
